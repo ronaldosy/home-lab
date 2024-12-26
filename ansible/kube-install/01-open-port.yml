@@ -1,0 +1,41 @@
+- name: Open port for kube traffic in master node
+  hosts: master
+  become: true
+  become_method: ansible.builtin.sudo
+  become_user: root
+  tasks:
+    - name: Open master firewall port
+      ansible.posix.firewalld:
+        port: "{{ item.port }}/{{ item.proto }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      with_items:
+        - {port: "6443", proto: "tcp"}
+        - {port: "2379", proto: "tcp"}
+        - {port: "2380", proto: "tcp"}
+        - {port: "10250", proto: "tcp"}
+        - {port: "10251", proto: "tcp"}
+        - {port: "10252", proto: "tcp"}
+        - {port: "10257", proto: "tcp"}
+        - {port: "10259", proto: "tcp"}
+        - {port: "179", proto: "tcp"}
+        - {port: "4789", proto: "udp"}
+
+- name: Open port for kube traffic in worker node
+  hosts: worker
+  become: true
+  become_method: ansible.builtin.sudo
+  become_user: root
+  tasks:
+    - name: Open worker firewall port
+      ansible.posix.firewalld:
+        port: "{{ item.port }}/{{ item.proto }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      with_items:
+        - {port: "179", proto: "tcp"}
+        - {port: "10250", proto: "tcp"}
+        - {port: "30000-32767", proto: "tcp"}
+        - {port: "4789", proto: "udp"}

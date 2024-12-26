@@ -1,0 +1,41 @@
+- name: Add repo and install packages
+  hosts: all
+  become: true
+  become_method: ansible.builtin.sudo
+  become_user: root
+  tasks:
+    - name: Add containerd repo
+      ansible.builtin.shell: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+      args:
+        creates: /etc/yum.repos.d/docker-ce.repo
+
+    - name: Install containerd
+      ansible.builtin.dnf:
+        name: containerd.io
+        state: present
+        enablerepo: docker-ce-stable
+
+    - name: Add k8s repo
+      ansible.builtin.yum_repository:
+        name: kubernetes
+        description: Kubernetes
+        baseurl: https://pkgs.k8s.io/core:/stable:/v1.31/rpm/
+        enabled: true
+        gpgcheck: true
+        gpgkey: https://pkgs.k8s.io/core:/stable:/v1.31/rpm/repodata/repomd.xml.key
+        exclude:
+          - kubelet
+          - kubeadm
+          - kubectl
+          - cri-tools
+          - kubernetes-cni
+
+    - name: Install kube package
+      ansible.builtin.dnf:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        disable_excludes: kubernetes
+        enablerepo: kubernetes
+        state: present

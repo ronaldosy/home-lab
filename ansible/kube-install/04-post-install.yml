@@ -1,0 +1,32 @@
+- name: Post installlation config
+  hosts: all
+  become: true
+  become_method: ansible.builtin.sudo
+  become_user: root
+  tasks:
+    - name: Remove default config.toml file
+      ansible.builtin.file:
+        path: /etc/containerd/config.toml
+        state: absent
+
+    - name: Generate config.toml file
+      ansible.builtin.shell: containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+      args:
+        executable: /bin/bash
+
+    - name: Configure containerd user systemdcgroup
+      ansible.builtin.replace:
+        path: /etc/containerd/config.toml
+        regexp: 'SystemdCgroup = false'
+        replace: 'SystemdCgroup = true'
+
+    - name: Enable and start containerd service
+      ansible.builtin.systemd_service:
+        name: containerd
+        enabled: true
+        state: started
+
+    - name: Enable kubelet service
+      ansible.builtin.systemd_service:
+        name: kubelet
+        enabled: true
