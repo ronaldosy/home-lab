@@ -14,7 +14,7 @@
       args:
         executable: /bin/bash
 
-    - name: Configure containerd user systemdcgroup
+    - name: Set SystemdCgroup to true
       ansible.builtin.replace:
         path: /etc/containerd/config.toml
         regexp: 'SystemdCgroup = false'

@@ -1,20 +1,7 @@
-- name: Add repo and install packages
-  hosts: all
-  become: true
-  become_method: ansible.builtin.sudo
-  become_user: root
+# This playbook used to install kubeadm and kubectl in Management node
+- name: Add repo
+  hosts: localhost
   tasks:
-    - name: Add containerd repo
-      ansible.builtin.shell: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-      args:
-        creates: /etc/yum.repos.d/docker-ce.repo
-
-    - name: Install containerd
-      ansible.builtin.dnf:
-        name: containerd.io
-        state: present
-        enablerepo: docker-ce-stable
-
     - name: Add kubernetes repo
       ansible.builtin.yum_repository:
         name: kubernetes
@@ -30,12 +17,12 @@
           - cri-tools
           - kubernetes-cni
 
-    - name: Install kube package
+    - name: Install kubeadm and kubectl
       ansible.builtin.dnf:
         name:
-          - kubelet
           - kubeadm
           - kubectl
         disable_excludes: kubernetes
         enablerepo: kubernetes
         state: present
+

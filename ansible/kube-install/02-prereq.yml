@@ -43,9 +43,9 @@
           {{ item.ip }} {{ item.name }}
         marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
       loop:
-        - { name: master, ip: 192.168.1.101 }
-        - { name: worker1, ip: 192.168.1.111 }
-        - { name: worker2, ip: 192.168.1.112 }
+        - { name: master.homelab.loc, ip: 192.168.1.101 }
+        - { name: worker01.homelab.loc, ip: 192.168.1.111 }
+        - { name: worker02.homelab.loc, ip: 192.168.1.112 }
 
     - name: Add kernel parameter for kubernetes
       ansible.posix.sysctl:

@@ -1,10 +1,10 @@
-master:
+masters:
   hosts:
-    master.lab.loc:
+    master.homelab.loc:
       ansible_user: ansible      
-worker:
+workers:
   hosts:
-    worker1.lab.loc:
+    worker01.homelab.loc:
       ansible_user: ansible      
-    worker2.lab.loc:
+    worker02.homelab.loc:
       ansible_user: ansible      

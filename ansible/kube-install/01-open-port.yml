@@ -1,10 +1,10 @@
 - name: Open port for kube traffic in master node
-  hosts: master
+  hosts: masters
   become: true
   become_method: ansible.builtin.sudo
   become_user: root
   tasks:
-    - name: Open master firewall port
+    - name: Configuring firewall
       ansible.posix.firewalld:
         port: "{{ item.port }}/{{ item.proto }}"
         permanent: true
@@ -21,21 +21,48 @@
         - {port: "10259", proto: "tcp"}
         - {port: "179", proto: "tcp"}
         - {port: "4789", proto: "udp"}
+        - {port: "443", proto: "tcp"}
+        - {port: "80", proto: "tcp"}
+        - {port: "8443", proto: "tcp"}
+        - {port: "8285", proto: "udp"} # For flannel
+        - {port: "8472", proto: "udp"} # For Flannel
 
 - name: Open port for kube traffic in worker node
-  hosts: worker
+  hosts: workers
   become: true
   become_method: ansible.builtin.sudo
   become_user: root
   tasks:
-    - name: Open worker firewall port
+    - name: Configuring Firewall
       ansible.posix.firewalld:
         port: "{{ item.port }}/{{ item.proto }}"
         permanent: true
-        immediate: true
+        immediate: true        
         state: enabled
       with_items:
         - {port: "179", proto: "tcp"}
         - {port: "10250", proto: "tcp"}
+        - {port: "10256", proto: "tcp"}
         - {port: "30000-32767", proto: "tcp"}
         - {port: "4789", proto: "udp"}
+        - {port: "443", proto: "tcp"}
+        - {port: "80", proto: "tcp"}
+        - {port: "8443", proto: "tcp"}
+        - {port: "8285", proto: "udp"} # For flannel
+        - {port: "8472", proto: "udp"} # For Flannel
+        - {port: "7946", proto: "tcp"}
+
+    - name: Enable masquerade
+      ansible.posix.firewalld:
+        masquerade: true
+        state: enabled
+        permanent: true
+    
+    - name: Allow traffic from clusterip & pod CIDR
+      ansible.posix.firewalld:
+        source: "{{item.cidr}}"
+        state: enabled
+        permanent: true
+      with_items:
+        - {cidr: "172.16.0.0/23"}
+        - {cidr: "10.244.0.0/16"}

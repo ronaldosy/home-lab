@@ -1,0 +1,23 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: metallb-addrpool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 192.168.1.150-192.168.1.199
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: metallb-l2adv
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - metallb-addrpool
+  nodeSelectors:
+  - matchLabels:
+      kubernetes.io/hostname: worker01.homelab.loc
+  - matchLabels:
+      kubernetes.io/hostname: worker02.homelab.loc
