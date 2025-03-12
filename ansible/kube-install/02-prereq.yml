@@ -4,11 +4,17 @@
   become_method: ansible.builtin.sudo
   become_user: root
   tasks:
+    - name: Check swap status 
+      ansible.builtin.shell: /usr/sbin/swapon -s
+      args:
+        executable: /bin/bash
+      register: swap_status
+
     - name: Disable Swap
       ansible.builtin.shell: /usr/sbin/swapoff -a
       args:
         executable: /bin/bash
-      # changed_when: true
+      when: swap_status.stdout != ""      
 
     - name: Disable swap in fstab
       ansible.posix.mount:

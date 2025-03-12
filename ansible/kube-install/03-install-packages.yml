@@ -4,10 +4,16 @@
   become_method: ansible.builtin.sudo
   become_user: root
   tasks:
+    - name: Check containerd repo
+      stat:
+        path: /etc/yum.repos.d/docker-ce.repo
+      register: containerd_repo
+
     - name: Add containerd repo
       ansible.builtin.shell: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
       args:
         creates: /etc/yum.repos.d/docker-ce.repo
+      when: not containerd_repo.stat.exists
 
     - name: Install containerd
       ansible.builtin.dnf:
