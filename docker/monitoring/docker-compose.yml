@@ -1,0 +1,24 @@
+version: '3.8' 
+
+networks:
+  monitoring:
+    driver: bridge
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    volumes:
+      - /opt/prometheus/etc/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /opt/prometheus:/prometheus
+    restart: unless-stopped
+  grafana:
+    image: grafana/grafana:main
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - /opt/grafana/:/var/lib/grafana
+    restart: unless-stopped

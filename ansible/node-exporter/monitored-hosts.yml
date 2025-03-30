@@ -1,0 +1,6 @@
+ubuntu:
+  hosts:
+    host1:
+      ansible_user: ansible      
+    host2:
+      ansible_user: ansible   

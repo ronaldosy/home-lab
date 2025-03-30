@@ -1,0 +1,12 @@
+- name: Install node-exporter on ubuntu nodes
+  hosts: ubuntu
+  become: true
+  become_method: ansible.builtin.sudo
+  become_user: root
+  tasks:
+    - name: Install node-exporter package
+      apt:
+        pkg:
+          prometheus-node-exporter
+        state: latest
+        update_cache: yes
